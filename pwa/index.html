@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>StealthBrowser</title>
+  
+  <!-- iOS PWA Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="StealthBrowser">
+  <link rel="apple-touch-icon" href="icons/icon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f1117">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      background-color: #0f1117;
+      color: #e2e8f0;
+      padding-top: env(safe-area-inset-top, 20px);
+      padding-bottom: env(safe-area-inset-bottom, 20px);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #1e2433;
+      background: #131722;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-box img {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+    }
+    .logo-box h1 {
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .badge-count {
+      font-size: 12px;
+      color: #94a3b8;
+      background: #1e2538;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+    .btn-add {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .container {
+      padding: 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .card {
+      background: #181d2a;
+      border: 1px solid #232a3d;
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #f8fafc;
+    }
+    .tag-os {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+    .tag-ios { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .tag-android { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+    .card-meta {
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .btn {
+      flex: 1;
+      padding: 8px 0;
+      border-radius: 8px;
+      border: none;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+    }
+    .btn-launch { background: #059669; color: white; }
+    .btn-fp { background: #334155; color: #e2e8f0; }
+    .btn-del { background: #7f1d1d; color: #fca5a5; max-width: 48px; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: flex-end;
+      z-index: 200;
+    }
+    .modal-content {
+      background: #181d2a;
+      width: 100%;
+      max-width: 480px;
+      border-radius: 20px 20px 0 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      animation: slideUp 0.25s ease-out;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .input-group label {
+      font-size: 12px;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+    .input-group input, .input-group select {
+      background: #0f1117;
+      border: 1px solid #2d3748;
+      color: #f1f5f9;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+    .input-group input:focus { border-color: #3b82f6; }
+    .btn-submit {
+      background: #2563eb;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #64748b;
+      font-size: 14px;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid #242c3f;
+      font-size: 13px;
+    }
+    .info-label { color: #94a3b8; }
+    .info-val { font-weight: 600; color: #f1f5f9; text-align: right; max-width: 60%; word-break: break-all; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-box">
+      <img src="icons/icon.png" alt="Logo">
+      <h1>StealthBrowser</h1>
+    </div>
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <span class="badge-count" id="profileCount">0 / 10</span>
+      <button class="btn-add" onclick="openCreateModal()">+ New</button>
+    </div>
+  </header>
+
+  <div class="container" id="profileList">
+    <!-- Profile cards will be injected here -->
+  </div>
+
+  <!-- Create Profile Modal -->
+  <div class="modal-overlay" id="createModal">
+    <div class="modal-content">
+      <div class="modal-title">
+        <span>Create Identity Profile</span>
+        <button class="close-btn" onclick="closeModal('createModal')">&times;</button>
+      </div>
+
+      <div class="input-group">
+        <label>Profile Name</label>
+        <input type="text" id="profName" placeholder="e.g. iPhone 15 VIP">
+      </div>
+
+      <div class="input-group">
+        <label>Operating System</label>
+        <select id="profOS">
+          <option value="ios">Apple iOS (iPhone 15 Pro Max)</option>
+          <option value="android">Android (Samsung Galaxy S24)</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>Proxy Host:Port (Optional)</label>
+        <input type="text" id="profProxy" placeholder="192.168.1.1:8080">
+      </div>
+
+      <button class="btn-submit" onclick="saveProfile()">Create Profile</button>
+    </div>
+  </div>
+
+  <!-- Fingerprint Inspector Modal -->
+  <div class="modal-overlay" id="fpModal">
+    <div class="modal-content">
+      <div class="modal-title">
+        <span id="fpTitle">Fingerprint Details</span>
+        <button class="close-btn" onclick="closeModal('fpModal')">&times;</button>
+      </div>
+      <div id="fpDetails" style="max-height: 60vh; overflow-y: auto;"></div>
+    </div>
+  </div>
+
+  <!-- Launch Session Modal -->
+  <div class="modal-overlay" id="launchModal">
+    <div class="modal-content">
+      <div class="modal-title">
+        <span id="launchTitle">Launch Stealth Session</span>
+        <button class="close-btn" onclick="closeModal('launchModal')">&times;</button>
+      </div>
+      <p style="font-size: 13px; color: #94a3b8; line-height: 1.4;">
+        Aapka unique stealth profile active hai. Niche diye gaye link par tap karein taake anti-detect isolation test kiya ja sake:
+      </p>
+      <div class="input-group">
+        <label>Enter Web URL</label>
+        <input type="text" id="launchUrl" value="https://browserleaks.com/canvas">
+      </div>
+      <button class="btn-submit" onclick="executeLaunch()" style="background:#059669;">Open Stealth Tab</button>
+    </div>
+  </div>
+
+  <script>
+    // PWA Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+
+    const MAX_PROFILES = 10;
+    const POOLS = {
+      iosUAs: [
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Mobile/15E148 Safari/604.1",
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.6 Mobile/15E148 Safari/604.1"
+      ],
+      androidUAs: [
+        "Mozilla/5.0 (Linux; Android 14; SM-S928B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.36",
+        "Mozilla/5.0 (Linux; Android 14; Pixel 9 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.36"
+      ],
+      timezones: ["America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles"],
+      webgl: [
+        { vendor: "Apple Inc.", renderer: "Apple GPU (A17 Pro)" },
+        { vendor: "Qualcomm", renderer: "Adreno (TM) 750" }
+      ]
+    };
+
+    function getProfiles() {
+      try {
+        return JSON.parse(localStorage.getItem('sb_profiles')) || [];
+      } catch(e) {
+        return [];
+      }
+    }
+
+    function saveProfiles(profs) {
+      localStorage.setItem('sb_profiles', JSON.stringify(profs));
+      render();
+    }
+
+    function generateFP(os) {
+      const isIOS = os === 'ios';
+      const ua = isIOS ? POOLS.iosUAs[Math.floor(Math.random() * POOLS.iosUAs.length)] : POOLS.androidUAs[Math.floor(Math.random() * POOLS.androidUAs.length)];
+      const tz = POOLS.timezones[Math.floor(Math.random() * POOLS.timezones.length)];
+      const wgl = isIOS ? POOLS.webgl[0] : POOLS.webgl[1];
+      const noise = (Math.random() * 0.9 + 0.05).toFixed(6);
+
+      return {
+        device: isIOS ? "iPhone 15 Pro Max" : "Samsung Galaxy S24 Ultra",
+        screen: isIOS ? "430x932 @3x" : "412x915 @3.5x",
+        platform: isIOS ? "iPhone" : "Linux armv8l",
+        ua: ua,
+        timezone: tz,
+        webgl_vendor: wgl.vendor,
+        webgl_renderer: wgl.renderer,
+        canvas_noise: noise,
+        audio_noise: (Math.random() * 0.0008 + 0.0001).toFixed(6),
+        languages: "en-US, en"
+      };
+    }
+
+    function render() {
+      const profs = getProfiles();
+      const countEl = document.getElementById('profileCount');
+      countEl.innerText = `${profs.length} / ${MAX_PROFILES}`;
+
+      const listEl = document.getElementById('profileList');
+      listEl.innerHTML = '';
+
+      if (profs.length === 0) {
+        listEl.innerHTML = `
+          <div class="empty-state">
+            <p style="font-size:16px; font-weight:600; color:#cbd5e1; margin-bottom:6px;">Koi Profile Maujood Nahi</p>
+            <p>Upar <b>+ New</b> button par tap karein taake naya isolated fingerprint ban sake.</p>
+          </div>
+        `;
+        return;
+      }
+
+      profs.forEach((p, idx) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="card-top">
+            <span class="card-title">${p.name}</span>
+            <span class="tag-os ${p.os === 'ios' ? 'tag-ios' : 'tag-android'}">${p.os}</span>
+          </div>
+          <div class="card-meta">
+            📱 <b>Device:</b> ${p.fp.device}<br>
+            🌐 <b>Proxy:</b> ${p.proxy || 'Direct Connection'}<br>
+            ⏱️ <b>Timezone:</b> ${p.fp.timezone}
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-launch" onclick="openLaunchModal(${idx})">▶ Launch</button>
+            <button class="btn btn-fp" onclick="viewFP(${idx})">FP Info</button>
+            <button class="btn btn-del" onclick="deleteProfile(${idx})">🗑️</button>
+          </div>
+        `;
+        listEl.appendChild(card);
+      });
+    }
+
+    function openCreateModal() {
+      const profs = getProfiles();
+      if (profs.length >= MAX_PROFILES) {
+        alert("Maximum limit (10 profiles) poori ho chuki hai!");
+        return;
+      }
+      document.getElementById('profName').value = '';
+      document.getElementById('profProxy').value = '';
+      document.getElementById('createModal').style.display = 'flex';
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    function saveProfile() {
+      const name = document.getElementById('profName').value.trim();
+      if (!name) {
+        alert("Profile name likhna zaroori hai!");
+        return;
+      }
+      const os = document.getElementById('profOS').value;
+      const proxy = document.getElementById('profProxy').value.trim();
+
+      const profs = getProfiles();
+      profs.push({
+        id: Date.now().toString(36),
+        name: name,
+        os: os,
+        proxy: proxy,
+        fp: generateFP(os)
+      });
+
+      saveProfiles(profs);
+      closeModal('createModal');
+    }
+
+    function deleteProfile(idx) {
+      if (confirm("Kiya aap yeh profile delete karna chahte hain?")) {
+        const profs = getProfiles();
+        profs.splice(idx, 1);
+        saveProfiles(profs);
+      }
+    }
+
+    function viewFP(idx) {
+      const p = getProfiles()[idx];
+      document.getElementById('fpTitle').innerText = `${p.name} - Fingerprint`;
+      const d = document.getElementById('fpDetails');
+      d.innerHTML = `
+        <div class="info-row"><span class="info-label">Device</span><span class="info-val">${p.fp.device}</span></div>
+        <div class="info-row"><span class="info-label">Resolution</span><span class="info-val">${p.fp.screen}</span></div>
+        <div class="info-row"><span class="info-label">Platform</span><span class="info-val">${p.fp.platform}</span></div>
+        <div class="info-row"><span class="info-label">Timezone</span><span class="info-val">${p.fp.timezone}</span></div>
+        <div class="info-row"><span class="info-label">WebGL Vendor</span><span class="info-val">${p.fp.webgl_vendor}</span></div>
+        <div class="info-row"><span class="info-label">WebGL Renderer</span><span class="info-val">${p.fp.webgl_renderer}</span></div>
+        <div class="info-row"><span class="info-label">Canvas Noise</span><span class="info-val">${p.fp.canvas_noise}</span></div>
+        <div class="info-row"><span class="info-label">Audio Noise</span><span class="info-val">${p.fp.audio_noise}</span></div>
+        <div class="info-row"><span class="info-label">Languages</span><span class="info-val">${p.fp.languages}</span></div>
+        <div class="info-row"><span class="info-label">User Agent</span><span class="info-val" style="font-size:11px;">${p.fp.ua}</span></div>
+      `;
+      document.getElementById('fpModal').style.display = 'flex';
+    }
+
+    let activeLaunchIdx = 0;
+    function openLaunchModal(idx) {
+      activeLaunchIdx = idx;
+      const p = getProfiles()[idx];
+      document.getElementById('launchTitle').innerText = `Session: ${p.name}`;
+      document.getElementById('launchModal').style.display = 'flex';
+    }
+
+    function executeLaunch() {
+      const url = document.getElementById('launchUrl').value.trim();
+      closeModal('launchModal');
+      window.open(url, '_blank');
+    }
+
+    // Default Seed Profiles if fresh
+    if (getProfiles().length === 0) {
+      saveProfiles([
+        {
+          id: 'p1',
+          name: 'iPhone 15 Pro - VIP 1',
+          os: 'ios',
+          proxy: '',
+          fp: generateFP('ios')
+        },
+        {
+          id: 'p2',
+          name: 'Galaxy S24 - US Profile',
+          os: 'android',
+          proxy: '198.51.100.22:8080',
+          fp: generateFP('android')
+        }
+      ]);
+    } else {
+      render();
+    }
+  </script>
+</body>
+</html>
