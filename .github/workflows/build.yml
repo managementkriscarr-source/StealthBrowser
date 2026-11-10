@@ -16,12 +16,17 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Install system deps
         run: |
           sudo apt-get update
           sudo apt-get install -y \
             git zip unzip \
-            openjdk-17-jdk \
             autoconf libtool pkg-config \
             zlib1g-dev libncurses5-dev \
             cmake libffi-dev libssl-dev \
@@ -31,19 +36,20 @@ jobs:
       - name: Install buildozer
         run: |
           pip install --upgrade pip setuptools
-          pip install buildozer==1.5.0 cython==0.29.33
+          pip install buildozer cython
 
-      - name: Cache buildozer
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.buildozer
-            ~/.android
-          key: buildozer-${{ hashFiles('buildozer.spec') }}
-          restore-keys: buildozer-
+      - name: Pre-accept Android SDK licenses
+        run: |
+          mkdir -p ~/.android
+          touch ~/.android/repositories.cfg
+          # Accept licenses automatically through yes pipe
+          mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
+          echo -e "\n24333f8a63b1d7f2e5138772e52e93c65d4eb8b1\nd56f5187479451eabf01fb78af6dfcb131a6481e\n24333f8a63b1d7f2e5138772e52e93c65d4eb8b1" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+          echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
 
-      - name: Build APK
-        run: buildozer -v android debug
+      - name: Build APK with auto accept licenses
+        run: |
+          yes | buildozer -v android debug
         env:
           BUILDOZER_WARN_ON_ROOT: '0'
 
