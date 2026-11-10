@@ -10,13 +10,15 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Set up Java
+      - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -24,27 +26,40 @@ jobs:
 
       - name: Install system dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
             git zip unzip \
             autoconf libtool pkg-config \
-            zlib1g-dev libncurses5-dev \
+            zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 \
             cmake libffi-dev libssl-dev \
             build-essential ccache \
             libltdl-dev
 
-      - name: Install buildozer and cython
+      - name: Install Buildozer and Cython
         run: |
           pip install --upgrade pip
           pip install buildozer cython==0.29.33
 
-      - name: Build with Buildozer Action
-        uses: ArtemSBulgakov/buildozer-action@v1
-        with:
-          workdir: .
-          buildozer_version: stable
+      - name: Pre-install Android Commandline Tools
+        run: |
+          mkdir -p ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest
+          mkdir -p ~/.buildozer/android/platform/android-sdk/tools/bin
+          cd /tmp
+          curl -sS -o cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+          unzip -q cmdline-tools.zip
+          cp -r cmdline-tools/* ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/
+          # Create compatibility links for older buildozer
+          ln -sf ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/* ~/.buildozer/android/platform/android-sdk/tools/bin/ || true
+          # Accept licenses
+          yes | ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
-      - name: Upload APK
+      - name: Build Android APK
+        run: |
+          yes | buildozer -v android debug
+        env:
+          BUILDOZER_WARN_ON_ROOT: '0'
+
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: StealthBrowser-APK
