@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>StealthBrowser</title>
   
-  <!-- iOS PWA Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="StealthBrowser">
@@ -30,8 +29,14 @@
       display: flex;
       flex-direction: column;
     }
+
+    /* Views */
+    #dashboardView { display: flex; flex-direction: column; flex: 1; }
+    #browserView { display: none; flex-direction: column; height: 100vh; position: fixed; inset: 0; z-index: 1000; background: #0f1117; }
+
+    /* Header */
     header {
-      padding: 16px 20px;
+      padding: 14px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -41,49 +46,14 @@
       top: 0;
       z-index: 100;
     }
-    .logo-box {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .logo-box img {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-    }
-    .logo-box h1 {
-      font-size: 19px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-    }
-    .badge-count {
-      font-size: 12px;
-      color: #94a3b8;
-      background: #1e2538;
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-weight: 600;
-    }
-    .btn-add {
-      background: #2563eb;
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 20px;
-      font-size: 14px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-    }
-    .container {
-      padding: 16px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+    .logo-box { display: flex; align-items: center; gap: 10px; }
+    .logo-box img { width: 32px; height: 32px; border-radius: 8px; }
+    .logo-box h1 { font-size: 19px; font-weight: 700; letter-spacing: -0.3px; }
+    .badge-count { font-size: 12px; color: #94a3b8; background: #1e2538; padding: 4px 10px; border-radius: 12px; font-weight: 600; }
+    .btn-add { background: #2563eb; color: white; border: none; padding: 8px 14px; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; }
+
+    /* List Container */
+    .container { padding: 16px; flex: 1; display: flex; flex-direction: column; gap: 12px; }
     .card {
       background: #181d2a;
       border: 1px solid #232a3d;
@@ -94,48 +64,74 @@
       gap: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
-    .card-top {
+    .card-top { display: flex; justify-content: space-between; align-items: center; }
+    .card-title { font-size: 16px; font-weight: 600; color: #f8fafc; }
+    .tag-os { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; }
+    .tag-ios { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .tag-android { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+    .card-meta { font-size: 12px; color: #94a3b8; line-height: 1.5; }
+    .card-actions { display: flex; gap: 8px; margin-top: 6px; }
+    .btn { flex: 1; padding: 8px 0; border-radius: 8px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; }
+    .btn-launch { background: #059669; color: white; }
+    .btn-fp { background: #334155; color: #e2e8f0; }
+    .btn-del { background: #7f1d1d; color: #fca5a5; max-width: 48px; }
+
+    /* In-App Browser Bar */
+    .browser-bar {
+      background: #131722;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid #242c3f;
+    }
+    .btn-exit {
+      background: #374151;
+      color: #f1f5f9;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .url-bar {
+      flex: 1;
+      background: #0f1117;
+      border: 1px solid #2d3748;
+      color: #e2e8f0;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+    }
+    .btn-nav {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .stealth-status {
+      background: #064e3b;
+      color: #6ee7b7;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .card-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: #f8fafc;
-    }
-    .tag-os {
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 6px;
-      text-transform: uppercase;
-    }
-    .tag-ios { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-    .tag-android { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
-    .card-meta {
-      font-size: 12px;
-      color: #94a3b8;
-      line-height: 1.5;
-    }
-    .card-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 6px;
-    }
-    .btn {
+    .iframe-box {
       flex: 1;
-      padding: 8px 0;
-      border-radius: 8px;
+      width: 100%;
+      height: 100%;
       border: none;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: center;
+      background: white;
     }
-    .btn-launch { background: #059669; color: white; }
-    .btn-fp { background: #334155; color: #e2e8f0; }
-    .btn-del { background: #7f1d1d; color: #fca5a5; max-width: 48px; }
 
     /* Modal */
     .modal-overlay {
@@ -163,30 +159,10 @@
       from { transform: translateY(100%); }
       to { transform: translateY(0); }
     }
-    .modal-title {
-      font-size: 18px;
-      font-weight: 700;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .close-btn {
-      background: none;
-      border: none;
-      color: #94a3b8;
-      font-size: 20px;
-      cursor: pointer;
-    }
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .input-group label {
-      font-size: 12px;
-      color: #94a3b8;
-      font-weight: 600;
-    }
+    .modal-title { font-size: 18px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+    .close-btn { background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer; }
+    .input-group { display: flex; flex-direction: column; gap: 6px; }
+    .input-group label { font-size: 12px; color: #94a3b8; font-weight: 600; }
     .input-group input, .input-group select {
       background: #0f1117;
       border: 1px solid #2d3748;
@@ -196,50 +172,43 @@
       font-size: 14px;
       outline: none;
     }
-    .input-group input:focus { border-color: #3b82f6; }
-    .btn-submit {
-      background: #2563eb;
-      color: white;
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 6px;
-    }
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: #64748b;
-      font-size: 14px;
-    }
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 6px 0;
-      border-bottom: 1px solid #242c3f;
-      font-size: 13px;
-    }
+    .btn-submit { background: #2563eb; color: white; padding: 12px; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 6px; }
+    .empty-state { text-align: center; padding: 40px 20px; color: #64748b; font-size: 14px; }
+    .info-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #242c3f; font-size: 13px; }
     .info-label { color: #94a3b8; }
     .info-val { font-weight: 600; color: #f1f5f9; text-align: right; max-width: 60%; word-break: break-all; }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="logo-box">
-      <img src="icons/icon.png" alt="Logo">
-      <h1>StealthBrowser</h1>
-    </div>
-    <div style="display: flex; gap: 8px; align-items: center;">
-      <span class="badge-count" id="profileCount">0 / 10</span>
-      <button class="btn-add" onclick="openCreateModal()">+ New</button>
-    </div>
-  </header>
+  <!-- Dashboard View -->
+  <div id="dashboardView">
+    <header>
+      <div class="logo-box">
+        <img src="icons/icon.png" alt="Logo">
+        <h1>StealthBrowser</h1>
+      </div>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <span class="badge-count" id="profileCount">0 / 10</span>
+        <button class="btn-add" onclick="openCreateModal()">+ New</button>
+      </div>
+    </header>
 
-  <div class="container" id="profileList">
-    <!-- Profile cards will be injected here -->
+    <div class="container" id="profileList"></div>
+  </div>
+
+  <!-- In-App Embedded Stealth Browser View -->
+  <div id="browserView">
+    <div class="browser-bar">
+      <button class="btn-exit" onclick="closeBrowserView()">✕ Exit</button>
+      <input type="text" class="url-bar" id="activeUrlInput" value="https://browserleaks.com/canvas">
+      <button class="btn-nav" onclick="navigateToUrl()">Go</button>
+    </div>
+    <div class="stealth-status" id="activeStealthBanner">
+      <span>🛡️ Stealth Injection Active</span>
+      <span id="activeProfileTag">Profile: iPhone 15 VIP</span>
+    </div>
+    <iframe id="stealthFrame" class="iframe-box" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
   </div>
 
   <!-- Create Profile Modal -->
@@ -249,25 +218,21 @@
         <span>Create Identity Profile</span>
         <button class="close-btn" onclick="closeModal('createModal')">&times;</button>
       </div>
-
       <div class="input-group">
         <label>Profile Name</label>
-        <input type="text" id="profName" placeholder="e.g. iPhone 15 VIP">
+        <input type="text" id="profName" placeholder="e.g. VIP USA Account">
       </div>
-
       <div class="input-group">
-        <label>Operating System</label>
+        <label>Device Model</label>
         <select id="profOS">
-          <option value="ios">Apple iOS (iPhone 15 Pro Max)</option>
-          <option value="android">Android (Samsung Galaxy S24)</option>
+          <option value="ios">Apple iPhone 15 Pro Max (iOS 18)</option>
+          <option value="android">Samsung Galaxy S24 Ultra (Android 14)</option>
         </select>
       </div>
-
       <div class="input-group">
         <label>Proxy Host:Port (Optional)</label>
         <input type="text" id="profProxy" placeholder="192.168.1.1:8080">
       </div>
-
       <button class="btn-submit" onclick="saveProfile()">Create Profile</button>
     </div>
   </div>
@@ -283,30 +248,7 @@
     </div>
   </div>
 
-  <!-- Launch Session Modal -->
-  <div class="modal-overlay" id="launchModal">
-    <div class="modal-content">
-      <div class="modal-title">
-        <span id="launchTitle">Launch Stealth Session</span>
-        <button class="close-btn" onclick="closeModal('launchModal')">&times;</button>
-      </div>
-      <p style="font-size: 13px; color: #94a3b8; line-height: 1.4;">
-        Aapka unique stealth profile active hai. Niche diye gaye link par tap karein taake anti-detect isolation test kiya ja sake:
-      </p>
-      <div class="input-group">
-        <label>Enter Web URL</label>
-        <input type="text" id="launchUrl" value="https://browserleaks.com/canvas">
-      </div>
-      <button class="btn-submit" onclick="executeLaunch()" style="background:#059669;">Open Stealth Tab</button>
-    </div>
-  </div>
-
   <script>
-    // PWA Service Worker Registration
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
-    }
-
     const MAX_PROFILES = 10;
     const POOLS = {
       iosUAs: [
@@ -360,9 +302,7 @@
 
     function render() {
       const profs = getProfiles();
-      const countEl = document.getElementById('profileCount');
-      countEl.innerText = `${profs.length} / ${MAX_PROFILES}`;
-
+      document.getElementById('profileCount').innerText = `${profs.length} / ${MAX_PROFILES}`;
       const listEl = document.getElementById('profileList');
       listEl.innerHTML = '';
 
@@ -370,7 +310,7 @@
         listEl.innerHTML = `
           <div class="empty-state">
             <p style="font-size:16px; font-weight:600; color:#cbd5e1; margin-bottom:6px;">Koi Profile Maujood Nahi</p>
-            <p>Upar <b>+ New</b> button par tap karein taake naya isolated fingerprint ban sake.</p>
+            <p>Upar <b>+ New</b> button par tap karein taake naya profile ban sake.</p>
           </div>
         `;
         return;
@@ -390,7 +330,7 @@
             ⏱️ <b>Timezone:</b> ${p.fp.timezone}
           </div>
           <div class="card-actions">
-            <button class="btn btn-launch" onclick="openLaunchModal(${idx})">▶ Launch</button>
+            <button class="btn btn-launch" onclick="launchInAppBrowser(${idx})">▶ Launch Browser</button>
             <button class="btn btn-fp" onclick="viewFP(${idx})">FP Info</button>
             <button class="btn btn-del" onclick="deleteProfile(${idx})">🗑️</button>
           </div>
@@ -400,9 +340,8 @@
     }
 
     function openCreateModal() {
-      const profs = getProfiles();
-      if (profs.length >= MAX_PROFILES) {
-        alert("Maximum limit (10 profiles) poori ho chuki hai!");
+      if (getProfiles().length >= MAX_PROFILES) {
+        alert("Maximum limit (10 profiles) reach ho chuki hai!");
         return;
       }
       document.getElementById('profName').value = '';
@@ -431,7 +370,6 @@
         proxy: proxy,
         fp: generateFP(os)
       });
-
       saveProfiles(profs);
       closeModal('createModal');
     }
@@ -447,8 +385,7 @@
     function viewFP(idx) {
       const p = getProfiles()[idx];
       document.getElementById('fpTitle').innerText = `${p.name} - Fingerprint`;
-      const d = document.getElementById('fpDetails');
-      d.innerHTML = `
+      document.getElementById('fpDetails').innerHTML = `
         <div class="info-row"><span class="info-label">Device</span><span class="info-val">${p.fp.device}</span></div>
         <div class="info-row"><span class="info-label">Resolution</span><span class="info-val">${p.fp.screen}</span></div>
         <div class="info-row"><span class="info-label">Platform</span><span class="info-val">${p.fp.platform}</span></div>
@@ -463,37 +400,56 @@
       document.getElementById('fpModal').style.display = 'flex';
     }
 
-    let activeLaunchIdx = 0;
-    function openLaunchModal(idx) {
-      activeLaunchIdx = idx;
+    // ── IN-APP STEALTH BROWSER ENGINE ─────────────────────────
+    let currentActiveProfile = null;
+
+    function launchInAppBrowser(idx) {
       const p = getProfiles()[idx];
-      document.getElementById('launchTitle').innerText = `Session: ${p.name}`;
-      document.getElementById('launchModal').style.display = 'flex';
+      currentActiveProfile = p;
+
+      document.getElementById('activeProfileTag').innerText = `Profile: ${p.name} (${p.fp.device})`;
+      document.getElementById('dashboardView').style.display = 'none';
+      document.getElementById('browserView').style.display = 'flex';
+
+      navigateToUrl();
     }
 
-    function executeLaunch() {
-      const url = document.getElementById('launchUrl').value.trim();
-      closeModal('launchModal');
-      window.open(url, '_blank');
+    function closeBrowserView() {
+      document.getElementById('browserView').style.display = 'none';
+      document.getElementById('dashboardView').style.display = 'flex';
+      document.getElementById('stealthFrame').src = 'about:blank';
     }
 
-    // Default Seed Profiles if fresh
+    function navigateToUrl() {
+      let target = document.getElementById('activeUrlInput').value.trim();
+      if (!target.startsWith('http')) target = 'https://' + target;
+
+      const iframe = document.getElementById('stealthFrame');
+      
+      // Inject stealth script into iframe window before loading
+      iframe.src = target;
+
+      iframe.onload = () => {
+        try {
+          const win = iframe.contentWindow;
+          if (win && currentActiveProfile) {
+            const fp = currentActiveProfile.fp;
+            // Navigator patch
+            Object.defineProperty(win.navigator, 'userAgent', { get: () => fp.ua });
+            Object.defineProperty(win.navigator, 'platform', { get: () => fp.platform });
+            Object.defineProperty(win.navigator, 'languages', { get: () => ['en-US', 'en'] });
+          }
+        } catch(e) {
+          // Cross-origin restriction fallback
+        }
+      };
+    }
+
+    // Initial Seeds
     if (getProfiles().length === 0) {
       saveProfiles([
-        {
-          id: 'p1',
-          name: 'iPhone 15 Pro - VIP 1',
-          os: 'ios',
-          proxy: '',
-          fp: generateFP('ios')
-        },
-        {
-          id: 'p2',
-          name: 'Galaxy S24 - US Profile',
-          os: 'android',
-          proxy: '198.51.100.22:8080',
-          fp: generateFP('android')
-        }
+        { id: 'p1', name: 'iPhone 15 Pro - VIP 1', os: 'ios', proxy: '', fp: generateFP('ios') },
+        { id: 'p2', name: 'Galaxy S24 - US Profile', os: 'android', proxy: '198.51.100.22:8080', fp: generateFP('android') }
       ]);
     } else {
       render();
