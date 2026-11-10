@@ -22,7 +22,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install system deps
+      - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -33,25 +33,16 @@ jobs:
             build-essential ccache \
             libltdl-dev
 
-      - name: Install buildozer
+      - name: Install buildozer and cython
         run: |
-          pip install --upgrade pip setuptools
-          pip install buildozer cython
+          pip install --upgrade pip
+          pip install buildozer cython==0.29.33
 
-      - name: Pre-accept Android SDK licenses
-        run: |
-          mkdir -p ~/.android
-          touch ~/.android/repositories.cfg
-          # Accept licenses automatically through yes pipe
-          mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
-          echo -e "\n24333f8a63b1d7f2e5138772e52e93c65d4eb8b1\nd56f5187479451eabf01fb78af6dfcb131a6481e\n24333f8a63b1d7f2e5138772e52e93c65d4eb8b1" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-          echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
-
-      - name: Build APK with auto accept licenses
-        run: |
-          yes | buildozer -v android debug
-        env:
-          BUILDOZER_WARN_ON_ROOT: '0'
+      - name: Build with Buildozer Action
+        uses: ArtemSBulgakov/buildozer-action@v1
+        with:
+          workdir: .
+          buildozer_version: stable
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
